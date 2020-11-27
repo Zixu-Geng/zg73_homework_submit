@@ -16,7 +16,7 @@ void ofApp::setup(){
     ground.move(0, -200, 0);
     
     //set sunlight
-    float radius = 512;
+    float radius = 1000;
     sun_pos.x =  -cos(ofGetElapsedTimef()*0.5) * radius;
     sun_pos.y = sin(ofGetElapsedTimef()*0.5) * radius;
     sun_pos.z = 0;
@@ -66,7 +66,7 @@ void ofApp::update(){
     time = ofGetElapsedTimef();
     
     //set Sun
-    float radius = 512;
+    float radius = 1000;
 
     sun_pos.x =  -cos(ofGetElapsedTimef()*0.5) * radius;
     sun_pos.y = sin(ofGetElapsedTimef()*0.5) * radius;
@@ -79,9 +79,9 @@ void ofApp::update(){
     color.b = ofMap( sun_pos.y, 0, 500, 150, 255, true);
     light.setDiffuseColor( color );
     
+    
     //set background
-
-    ofBackground(ofColor(ofMap( sun_pos.y, -200, 312, 0, 122, true),ofMap( sun_pos.y, -200, 312, 0, 200, true),ofMap( sun_pos.y, -200, 312, 0, 255, true)));
+    ofBackground(ofColor(ofMap( sun_pos.y, -200, 800, 0, 122, true),ofMap( sun_pos.y, -200, 800, 0, 200, true),ofMap( sun_pos.y, -200, 800, 0, 255, true)));
     
     //set Snow
     for(int i=0;i<level;i++){
@@ -143,7 +143,6 @@ void ofApp::draw(){
     stringstream text;
     text << "w to toggle weather[" << (weather ? "ON" : "OFF") << "] \n";
     text << "b to create tree  \n";
-    text << ofToString(sun_pos.y)+" \n";
     text << "type j,k to control the level of snow: "+ofToString(level);
     ofDrawBitmapStringHighlight(text.str(), 20, 20);
 
