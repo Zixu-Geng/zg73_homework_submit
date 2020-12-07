@@ -34,13 +34,7 @@ void ofApp::update(){
 
     if(webcam.isFrameNew()){
         finder.update(webcam);
-        for(int x=0;x<ofGetWidth();x++){
-            for(int y=0;y<ofGetWidth();y++){
-                ofColor color = webcam.getPixels().getColor(x, y);
-                screenshot.setColor(x, y, color);
-            }
-        }
-        
+
 
         
         
