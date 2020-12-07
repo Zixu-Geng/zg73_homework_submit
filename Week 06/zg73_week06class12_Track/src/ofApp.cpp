@@ -5,27 +5,16 @@ void ofApp::setup(){
     
     ofBackground(0);
     
-    webcam.listDevices();      // prints all webcams to console
-    webcam.setup(640, 480);    // open default webcam @ 640x480
-    
-    // ofxCv::ObjectFinder
-    //  can find some objects (e.g. faces) in images
-    //  + keep track of found objects as they move (if video)
-    
-    // load a "Haar cascade" object detector file -
+    webcam.listDevices();     
+    webcam.setup(640, 480);   
+
     finder.setup("haarcascade_hand.xml");
-    // ours will find faces - check bin/data/ folder for more:
-    //  - cat face, full body, license plate, clock, etc.
-    //  see how it works: https://www.youtube.com/watch?v=hPCTwxF0qf4&feature=youtu.be&t=57
+
     
     finder.setPreset( ofxCv::ObjectFinder::Preset::Fast );
-    // other presets: Accurate (slow), Sensitive (finds more)
-    
+  
     finder.getTracker().setPersistence( 30 );
-    // the tracker will forget a face if gone for 30 frames
-    
-    
-    // an ofConePrimitive (3d cone mesh) will be our hat:
+
     
     
     screenshot.allocate(640, 480, OF_IMAGE_COLOR);
@@ -88,11 +77,7 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    
-//    ofEnableDepthTest();
-    ofDrawBitmapString(ofToString(finder.size()), 10, 10);
-    
-    // draw webcam center screen:
+
     glm::vec2 webcamSize = glm::vec2(webcam.getWidth(),webcam.getHeight());
     glm::vec2 webcamPos  = ofGetWindowSize()*0.5 - webcamSize*0.5;
     ofTranslate( webcamPos );
