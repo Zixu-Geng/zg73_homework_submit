@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<group>
+	<Wolf>
+		<Number>1</Number>
+		<born_rate>0.5</born_rate>
+		<hunt_rate>0.5</hunt_rate>
+		<death_rate>0.5</death_rate>
+	</Wolf>
+	<Sheep>
+		<Number>35</Number>
+		<born_rate>0.5</born_rate>
+		<death_rate>0.5</death_rate>
+	</Sheep>
+</group>
