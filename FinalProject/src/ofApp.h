@@ -65,6 +65,7 @@ public:
     
     float change_terrain_direction;
     
+    float type;
    
     
 

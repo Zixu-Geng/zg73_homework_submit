@@ -21,7 +21,7 @@ public:
     
     void applyNoise( glm::vec2 spatialFreq, float amplitude, float noiseZ = 0.f );
     void updateNormals();
-    void terrain_changer(glm::vec2 pos_xz,float direction);
+    void terrain_changer(glm::vec2 pos_xz,float direction,float type);
     
     void transformVertices(glm::mat4 transform);
     

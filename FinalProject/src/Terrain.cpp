@@ -119,7 +119,7 @@ float Terrain::getheight(glm::vec2 pos_xz){
 
 }
 
-void Terrain::terrain_changer(glm::vec2 pos_xz,float direction){
+void Terrain::terrain_changer(glm::vec2 pos_xz,float direction,float type){
     int x = 2048+pos_xz.x ;
     int z = -pos_xz.y + 2048;
     
@@ -134,18 +134,22 @@ void Terrain::terrain_changer(glm::vec2 pos_xz,float direction){
     }
 
     
-    for(int x=-300;x<301;x++){
-        for(int y=-300;y<301;y++){
+    for(int x=-150;x<151;x++){
+        for(int y=-150;y<151;y++){
             glm::vec2 center = glm::vec2(col,row);
             glm::vec2 cur = glm::vec2(col+x,row+y);
             float distance = glm::length(cur-center);
-            if(distance < 300){
+            if(distance < 150){
                 float new_row = row+x;
                 float new_col = col+y;
                 float vertice = new_col*1024 + new_row;
                 
+                if(type==1){
+                    mesh.getVertices()[vertice].y += 2*ofMap(distance,0,150,10,0)*direction;
+                }else{
+                    mesh.getVertices()[vertice].y += 10*direction;
+                }
                 
-                mesh.getVertices()[vertice].y += ofMap(distance,0,300,20,0)*direction;
             }
         }
     }

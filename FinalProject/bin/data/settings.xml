@@ -11,4 +11,5 @@
 		<born_rate>0.5</born_rate>
 		<death_rate>0.5</death_rate>
 	</Sheep>
+	<begin>0</begin>
 </group>

@@ -33,7 +33,7 @@ void ofApp::setup(){
     
     help = false;
     change_terrain = false;
-    
+    type = 1;
     
     //set player wolf
 
@@ -203,7 +203,8 @@ void ofApp::draw(){
     if(creater){
         ofSetColor(0);
         text << "click mouse to change the terrain, the large gap will prevent passing\n";
-        text << "use o and l to change the direction of the changing";
+        text << "use o to change the direction of the changing\n";
+        text << "use l to change the type of changing";
     }
 
     ofDrawBitmapStringHighlight(text.str(), ofGetWidth()/2-250, 20);
@@ -234,7 +235,7 @@ void ofApp::draw(){
     float le = glm::length(mouse-glm::vec2(ofGetWidth()/2,ofGetHeight()/2));
     
     ofDrawBitmapString("hungry: "+player_hungry, ofGetWidth()-150, 20);
-    ofDrawBitmapString("hp: "+ofToString(hp), ofGetWidth()-150, 40);
+    ofDrawBitmapString("hp: "+ofToString(hp ), ofGetWidth()-150, 40);
 
 
 
@@ -458,7 +459,7 @@ void ofApp::terrain_changer(glm::vec2 mouse_pos){
     map_pos.x = ofMap(ofGetHeight()/2 - ofGetMouseY(), -323,323,-2048,2048);
 
 
-    terrain.terrain_changer(map_pos, change_terrain_direction);
+    terrain.terrain_changer(map_pos, change_terrain_direction,type);
 
     
     
@@ -521,10 +522,11 @@ void ofApp::keyPressed(int key){
         creater = !creater;
     }
     if(key == 'o'){
-        change_terrain_direction = 1;
+        change_terrain_direction = -change_terrain_direction;
     }
+
     if(key == 'l'){
-        change_terrain_direction = -1;
+        type = -type;
     }
 }
 
