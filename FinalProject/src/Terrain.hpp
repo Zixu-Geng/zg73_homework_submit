@@ -21,6 +21,7 @@ public:
     
     void applyNoise( glm::vec2 spatialFreq, float amplitude, float noiseZ = 0.f );
     void updateNormals();
+    void terrain_changer(glm::vec2 pos_xz,float direction);
     
     void transformVertices(glm::mat4 transform);
     
@@ -39,8 +40,7 @@ public:
     
     ofMesh& getMesh() { return mesh; }  // return ref to mesh
     
-private:
-    
+
     ofMesh mesh;
     
     ofMesh normalLines; // for drawing normals

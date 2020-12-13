@@ -23,9 +23,10 @@ public:
     void wolf_hunting();
     void check_hunting();
     void update_gui();
+    void move_player();
+    void terrain_changer(glm::vec2 mouse_pos);
+
     
-
-
     void keyPressed(int key);
     void keyReleased(int key);
     void mouseMoved(int x, int y );
@@ -38,8 +39,6 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
     
-    
-        
     Terrain terrain;
     ofEasyCam cam;
     ofLight light;
@@ -58,6 +57,18 @@ public:
     float wolf_born,sheep_born;
     
     bool SET = false;
+    bool help;
+    
+    
+    float mouse_distance;
+    bool creater,change_terrain;
+    
+    float change_terrain_direction;
+    
+   
+    
+
+    
     
     
 
@@ -74,8 +85,10 @@ public:
     ofParameter<int> Sheep_number;
     ofParameter<float> Sheep_born_rate;
     ofParameter<float> Sheep_death_rate;
+
     
     ofParameterGroup Begin_Parameter;
     ofParameter<bool> BEGIN;
+   
 
 };

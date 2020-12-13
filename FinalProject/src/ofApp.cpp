@@ -31,7 +31,16 @@ void ofApp::setup(){
         }
     }
     
+    help = false;
+    change_terrain = false;
     
+    
+    //set player wolf
+
+    Wolf WOLF = Wolf(1);
+    wolfs.push_back(WOLF);
+    
+    change_terrain_direction = 1;
 
   
     wolf_born = ofGetElapsedTimef();
@@ -50,8 +59,10 @@ void ofApp::setup(){
     Sheep_Parameter.add(Sheep_born_rate.set("born_rate",10,5,15));
     Sheep_Parameter.add(Sheep_death_rate.set("death_rate",30,20,40));
     
+    
     Begin_Parameter.setName("Preference");
     Begin_Parameter.add(BEGIN.set("begin",false));
+   
 
     gui.setup();
     gui.add(Wolf_Parameter);
@@ -65,6 +76,24 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
     
+    if(creater){
+
+        cam.setPosition(0, 4000, 0);
+        cam.lookAt(glm::vec3(0,-1,0));
+        cam.rotate(-10,cam.getUpAxis());
+        
+
+        if(creater){
+            if(change_terrain){
+                glm::vec2 pos = glm::vec2(ofGetMouseX(),ofGetMouseY());
+                terrain_changer(pos);
+            }
+        }
+        
+    }
+    
+    
+
     update_gui();
     
     time = ofGetElapsedTimef();
@@ -120,7 +149,9 @@ void ofApp::update(){
         
         //update wolf;
         for(int i=0;i<wolfs.size();i++){
+        
             move_wolf(wolfs[i]);
+            
             wolfs[i].update();
         }
         
@@ -150,10 +181,62 @@ void ofApp::update(){
 void ofApp::draw(){
     
     
+    
+    ofSetColor(255);
+    
+    stringstream text;
+    
     ofPushStyle();
-    ofSetColor(255, 0, 0);
-    ofDrawBitmapString(ofToString(wolfs.size())+"  "+ofToString(sheeps.size()), ofGetWidth()-100, 10);
+    
+    if(!help && !creater){
+        text << "type h for help\n";
+        text << "type c to change the terrain\n";
+        text << "type r to restart\n";
+    }
+    if(help && !creater){
+        text << "born_rate change the frequency of new birth for wolfs and sheeps\n";
+        text << "death_rate change the frequency of death for wolfs and sheeps\n";
+        text << "hunt_rate change the frequency of hunting for the wolfs\n";
+        text << "your goal is to change the parameter to get a stable ecosystem\n";
+        text << "you can control the wolf with red shpere and the parameter is on the right\nuse wasd and " " to control the movement";
+    }
+    if(creater){
+        ofSetColor(0);
+        text << "click mouse to change the terrain, the large gap will prevent passing\n";
+        text << "use o and l to change the direction of the changing";
+    }
+
+    ofDrawBitmapStringHighlight(text.str(), ofGetWidth()/2-250, 20);
+    
+
+    
+    
     ofPopStyle();
+    string player_hungry;
+    float hp;
+    
+    player_hungry = "die";
+    hp = 0;
+    for(int i=0;i<wolfs.size();i++){
+        if(wolfs[i].category == 1){
+            if(wolfs[i].is_hungry){
+                player_hungry = "yes";
+                hp = ofGetElapsedTimef() - wolfs[i].hunt;
+                hp = ofMap(hp, 0, 30, 100, 0);
+            }else{
+                player_hungry = "no";
+                hp = 100;
+            }
+        }
+    }
+    
+    glm::vec2 mouse = glm::vec2(ofGetMouseX(),ofGetMouseY());
+    float le = glm::length(mouse-glm::vec2(ofGetWidth()/2,ofGetHeight()/2));
+    
+    ofDrawBitmapString("hungry: "+player_hungry, ofGetWidth()-150, 20);
+    ofDrawBitmapString("hp: "+ofToString(hp), ofGetWidth()-150, 40);
+
+
 
 
     cam.begin();
@@ -175,9 +258,8 @@ void ofApp::draw(){
     starfield.drawVertices();
     ofPopStyle();
     
-    
-    ofDrawAxis(2048);
-    
+
+
     //draw wolf
     for(int i=0;i<wolfs.size();i++){
         wolfs[i].draw();
@@ -213,17 +295,26 @@ void ofApp::move_wolf(Wolf& wolf){
     glm::vec2 pos_xz = glm::vec2(wolf.pos.x,wolf.pos.z);
     glm::vec2 new_pos = pos_xz + wolf.vel_xz;
     
-    //move face direction
-    float Angle = atan2(wolf.vel_xz.y-0, wolf.vel_xz.x-0);
-    Angle = ofMap(Angle, -PI, PI, -180, 180);
-    wolf.face_angle = Angle;
+    
+    if(abs(terrain.getheight(pos_xz-new_pos))>300){
+        wolf.vel_xz = -wolf.vel_xz;
+    }else{
+        //move face direction
+        float Angle = atan2(wolf.vel_xz.y-0, wolf.vel_xz.x-0);
+        Angle = ofMap(Angle, -PI, PI, -180, 180);
+        wolf.face_angle = Angle;
 
-    //move 3d position
-    float height = terrain.getheight(new_pos);
-    wolf.pos.x = new_pos.x;
-    wolf.pos.y = height-225;
-    wolf.pos.z = new_pos.y;
+        //move 3d position
+        float height = terrain.getheight(new_pos);
+        wolf.pos.x = new_pos.x;
+        wolf.pos.y = height-225;
+        wolf.pos.z = new_pos.y;
+    }
+    
+
 }
+
+
 
 
 //move_sheep
@@ -231,16 +322,20 @@ void ofApp::move_sheep(Sheep& sheep){
     glm::vec2 pos_xz = glm::vec2(sheep.pos.x,sheep.pos.z);
     glm::vec2 new_pos = pos_xz + sheep.vel_xz;
     
-    //move face direction
-    float Angle = atan2(sheep.vel_xz.y-0, sheep.vel_xz.x-0);
-    Angle = ofMap(Angle, -PI, PI, -180, 180);
-    sheep.face_angle = Angle;
+    if(abs(terrain.getheight(pos_xz-new_pos))>300){
+        sheep.vel_xz = -sheep.vel_xz;
+    }else{
+        //move face direction
+        float Angle = atan2(sheep.vel_xz.y-0, sheep.vel_xz.x-0);
+        Angle = ofMap(Angle, -PI, PI, -180, 180);
+        sheep.face_angle = Angle;
 
-    //move 3d position
-    float height = terrain.getheight(new_pos);
-    sheep.pos.x = new_pos.x;
-    sheep.pos.y = height-225;
-    sheep.pos.z = new_pos.y;
+        //move 3d position
+        float height = terrain.getheight(new_pos);
+        sheep.pos.x = new_pos.x;
+        sheep.pos.y = height-225;
+        sheep.pos.z = new_pos.y;
+    }
 }
 
 
@@ -301,7 +396,7 @@ void ofApp::SHEEP_born(){
 
 void ofApp::wolf_hunting(){
     for(int i=0;i<wolfs.size();i++){
-        if(wolfs[i].is_hungry == true && sheeps.size()!=0){
+        if(wolfs[i].is_hungry == true && sheeps.size()!=0 && wolfs[i].category == 0){
             
             float min = 100000;
             Sheep hunted;
@@ -354,9 +449,21 @@ void ofApp::update_gui(){
         sheeps[j].DEATH_RATE = Sheep_death_rate;
     }
     
-    
+}
 
-                                    
+void ofApp::terrain_changer(glm::vec2 mouse_pos){
+    
+    glm::vec2 map_pos;
+    map_pos.y = ofMap(ofGetMouseX()-ofGetWidth()/2, -323, 323, -2048, 2048);
+    map_pos.x = ofMap(ofGetHeight()/2 - ofGetMouseY(), -323,323,-2048,2048);
+
+
+    terrain.terrain_changer(map_pos, change_terrain_direction);
+
+    
+    
+    
+    
 }
 
 //--------------------------------------------------------------
@@ -364,11 +471,65 @@ void ofApp::keyPressed(int key){
     if(key == 'r'){
         wolfs.clear();
         sheeps.clear();
-
-       
-
+        terrain.clearParent();
+        Wolf WOLF = Wolf(1);
+        wolfs.push_back(WOLF);
+        heightMap.load("crater_depth.jpg");
+        textureMap.load("crater_texture.jpg");
+        generateTerrain();
+    }
+    if(key == 'h'){
+        help = !help;
+    }
+    if(key == 'w'){
+        for(int i=0;i<wolfs.size();i++){
+            if(wolfs[i].category == 1){
+                wolfs[i].vel_xz.x += 2;
+            }
+        }
+    }
+    if(key == 's'){
+        for(int i=0;i<wolfs.size();i++){
+            if(wolfs[i].category == 1){
+                wolfs[i].vel_xz.x -= 2;
+            }
+        }
+    }
+    if(key == 'a'){
+        for(int i=0;i<wolfs.size();i++){
+            if(wolfs[i].category == 1){
+                wolfs[i].vel_xz.y -= 2;
+            }
+        }
+    }
+    if(key == 'd'){
+        for(int i=0;i<wolfs.size();i++){
+            if(wolfs[i].category == 1){
+                wolfs[i].vel_xz.y += 2;
+            }
+        }
+    }
+    
+    if(key == ' '){
+        for(int i=0;i<wolfs.size();i++){
+            if(wolfs[i].category == 1){
+                wolfs[i].vel_xz = glm::vec2(0,0);
+            }
+        }
+    }
+    if(key == 'c'){
+        creater = !creater;
+    }
+    if(key == 'o'){
+        change_terrain_direction = 1;
+    }
+    if(key == 'l'){
+        change_terrain_direction = -1;
     }
 }
+
+
+
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
@@ -387,11 +548,19 @@ void ofApp::mouseDragged(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
+    
+    if(creater){
+        change_terrain = true;
+    }
 
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
+    
+    if(creater){
+        change_terrain = false;
+    }
 
 }
 

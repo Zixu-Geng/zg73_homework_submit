@@ -13,8 +13,9 @@ class Wolf{
 public:
     
     
-    Wolf();
+    Wolf(float _category);
     Wolf(glm::vec3 _pos);
+    
     
     void update();
     void draw();
@@ -33,6 +34,10 @@ public:
     ofVboMesh mesh;
     
     float age,face_angle,scale,died_angle,begin,hunt,hungry,HUNTING_RATE,DEATH_RATE;
+    
+    float category;
+    
+    float hungry_time;
     
 
     
